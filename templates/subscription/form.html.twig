@@ -1,0 +1,218 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <style>
+        body {
+            font-family: Muli;
+            background-color: #F8F1F1;
+            margin: auto;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            display: block;
+            color: #025464;
+        }
+
+        html {
+            height: 100%;
+        }
+        /*style="background-color: mediumspringgreen; width: 60%; opacity: 80%;*/
+        /*position: absolute; top: 1px; right: 33.6%; margin: 10px; font-size: 2em; border-radius: 2%; max-width: 400px"*/
+        /*.flash-info {*/
+        /*    -moz-animation: cssAnimation 0s ease-in 5s forwards;*/
+        /*    !* Firefox *!*/
+        /*    -webkit-animation: cssAnimation 0s ease-in 5s forwards;*/
+        /*    !* Safari and Chrome *!*/
+        /*    -o-animation: cssAnimation 0s ease-in 5s forwards;*/
+        /*    !* Opera *!*/
+        /*    animation: cssAnimation 0s ease-in 5s forwards;*/
+        /*    -webkit-animation-fill-mode: forwards;*/
+        /*    animation-fill-mode: forwards;*/
+        /*}*/
+
+        h1 {
+            font-family: Ubuntu, sans-serif;
+            font-size: 2em;
+            text-align: center;
+            color: #025464;
+        }
+
+        p {
+            font-size: 1em;
+            text-align: center;
+        }
+
+        h1 + p {
+            font-size: 0.8em;
+        }
+
+        label {
+            display: inline-block;
+            text-align: right;
+            margin: 5px 0 3px 0;
+        }
+
+        input, select {
+            display: inline-block;
+            padding: 5px;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border: 1px solid #34495e;
+            font-family: Poppins;
+            margin: 0 0 7px 0;
+            color: #E57C23;
+            width: 100%;
+        }
+
+        .flash-info p {
+            text-align: center;
+        }
+
+        .block-form {
+            background-color: #E8AA42;
+            margin: auto;
+            max-width: 400px;
+            width : 60%; padding: 10px;
+            border-radius: 2%;
+            heigth: 100%
+        }
+        .km-input{
+            width: 90%
+        }
+        .km-suffix{
+            width: 5%; display: inline-block;
+        }
+        form+div {
+            width : 95%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        footer > div > p {
+            font-size: 0.7em;
+            font-style: italic;
+        }
+
+        ul li:before {
+            content: '\2718';
+            margin: 0 5px 20px 0;
+        }
+
+        li {
+            margin: 0 5px 0 5px;
+        }
+
+        ul {
+            list-style: none;
+            opacity: 50%;
+            background-color: #F8F1F1;
+            margin-top: -5px;
+            border-radius: 5px;
+            border: 2px solid darkred;
+            color: darkred;
+            font-size: 0.9em;
+            font-weight: bolder;
+            padding: 0;
+        }
+
+        .submit-button {
+            display: inline-block;
+            width: 80%;
+            margin:20px 10% 10px 10%;
+            font-weight: bold;
+        }
+    </style>
+
+    {% for flash_message in app.session.flashbag.get('info') %}
+        <div class="flash-info">
+            <p>
+                {{ flash_message }}
+            </p>
+        </div>
+    {% endfor %}
+
+    <div>
+        {{ form_start(form) }}
+
+        <div>
+            {{ form_errors(form) }}
+        </div>
+
+        <div class="block-form">
+            <div>
+                <h1>Créer une alerte Okkazeo</h1>
+                <p>
+                    Recevez sur votre email les nouveautés Okkazeo avec des critères de recherche croisés de BoardGameGeek.
+                </p>
+            </div>
+            <form method="post">
+                <div>
+                    <label for="email">Recevoir l'alerte</label>
+                    {{ form_widget(form.frequency) }}
+
+                    <div>
+                        {{ form_errors(form.email) }}
+                    </div>
+
+                </div>
+                <div>
+                    <label for="email">Sur mon email</label>
+                    <input type="text" name="subscription[email]" id="email" value="{{ form.email.vars.value }}">
+
+                    <div>
+                        {{ form_errors(form.email) }}
+                    </div>
+
+                </div>
+                <div>
+                    <label for="filterZipcode">Autour du code postal</label>
+                    <input type="text" name="subscription[filterZipcode]" id="filterZipcode" maxlength="5" size="5" placeholder="44420"
+
+                           value="{{ form.filterZipcode.vars.value }}">
+                    {{ form_errors(form.filterZipcode) }}
+                </div>
+                <div>
+                    <label for="filterRange">Rayon de recherche</label>
+
+                    <input class="km-input" type="number" name="subscription[filterRange]" id="filterRange"
+                           maxlength="3" size="6"
+                           value="{{ form.filterRange.vars.value }}">
+                    <div class="km-suffix"><span>km</span></div>
+                    {{ form_errors(form.filterRange) }}
+                </div>
+
+                <div>
+                    <label for="filterMinYear">Année minimum de sortie</label>
+                    <input type="number" name="subscription[filterMinYear]" id="filterMinYear"
+                           maxlength="4" size="6" min="0"
+                           value="{{ form.filterMinYear.vars.value }}">
+                    {{ form_errors(form.filterMinYear) }}
+                </div>
+                <div>
+                    <label for="filterMinRank">Rang minimum dans le <a href="https://boardgamegeek.com/browse/boardgame"
+                                                                       target="blank">classement BGG</a></label>
+                    <input type="number" name="subscription[filterMinRank]" id="filterMinRank"
+
+                           maxlength="6" size="6"
+                           value="{{ form.filterMinRank.vars.value }}">
+                    {{ form_errors(form.filterMinRank) }}
+                </div>
+                <div>
+                    <label>Classé par</label>
+                    <select disabled="disabled"><option>Rang BGG</option></select>
+                </div>
+                <div>
+                    <input class="submit-button" type="submit" name="subscription[save]" id="save" value="Sauvegarder"
+                    >
+                </div>
+            </form>
+        </div>
+
+        {{ form_end(form, {'render_rest': false}) }}
+    </div>
+    <footer>
+        <div>
+            <p>Vous pouvez vous désinscrire ou changer vos préférences en cliquant sur le lien présent dans l'email.</p>
+        </div>
+    </footer>
+{% endblock %}

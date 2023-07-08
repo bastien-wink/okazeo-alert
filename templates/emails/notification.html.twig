@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<body style="background-color: #ececec;font-family: Sans-serif;color: gray;">
+
+<div class="notification-email" style="width: 100%; margin: auto;text-align: center;padding-top: 10px">
+    <div>
+        <p>
+            Résultats de recherche à {{ subscription.filterRange }} km autour de {{ subscription.filterZipcode }}, année
+            supérieure à {{ subscription.filterMinYear }} et rang BGG supérieur à {{ subscription.filterMinRank }}
+        </p>
+    </div>
+    {% for topRankedAnnonce in topRankedAnnonces %}
+        <div class="card"
+             style="width: 320px;background-color: white;margin: 5px;padding-top: 10px;display: inline-block;flex: 1 1 auto;">
+            <div class="header" style="width: 100%;">
+                <div class="image" style="width: 30%;display: inline-block;">
+                    <a href="{{ topRankedAnnonce.url }}">
+                        <img src="{{ topRankedAnnonce.imageUrl }}"
+                             style="height: 102px;max-height: 204px;width: 102px;object-fit: contain;background-color: white;opacity: 0.8;">
+                    </a>
+                </div>
+                <div class="title"
+                     style="padding: 5px;text-transform: uppercase;width: 60%;display: inline-block;vertical-align: top;font-size: 15px">
+                    <p>{{ topRankedAnnonce.game.bggName }}</p>
+                </div>
+            </div>
+            <table style="width: 100%;font-size: 12px;padding: 5px;">
+                <tr style="width: 290px;">
+                    <td style="text-align: center;">{{ topRankedAnnonce.price }}</td>
+                    <td style="text-align: center;">BGG n°{{ topRankedAnnonce.game.bggRank }}</td>
+                </tr>
+                <tr style="width: 290px;">
+                    <td style="text-align: center;">{{ topRankedAnnonce.game.bggYearPublished }}</td>
+                    <td style="text-align: center;">Difficulté : {{ topRankedAnnonce.game.bggWeight }}/5</td>
+                </tr>
+                <tr style="width: 290px;">
+                    <td style="text-align: center;">{{ topRankedAnnonce.game.bggDesigner }}</td>
+                    <td style="text-align: center;">{{ topRankedAnnonce.game.bggPlayingTime }} min</td>
+                </tr>
+                <tr style="width: 290px;">
+                    <td style="text-align: center;font-size: 14px"><a href="{{ topRankedAnnonce.url }}">Voir l'annonce</a></td>
+                    <td style="text-align: center;font-size: 14px"><a
+                                href="https://boardgamegeek.com/boardgame/{{ topRankedAnnonce.game.bggId }}">Fiche
+                            BGG</a></td>
+                </tr>
+            </table>
+
+        </div>
+    {% endfor %}
+
+    <div style="margin:10px;text-align: center ">
+        <a href="{{ base_url }}{{ path('edit_subscription',{'key':subscription.key}) }}">Modifier mon alerte</a> -
+        <a href="{{ base_url }}{{ path('remove_subscription',{'key':subscription.key}) }}">Se désabonner</a>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+    php:
+        image: webdevops/php-apache:8.1
+        #    image: webdevops/php-apache-dev:8.1
+        working_dir: /app
+        volumes:
+            - ./:/app:cached
+        ports:
+            - "80:80"
+            - "443:443"
+        depends_on:
+            - database
+        environment:
+            WEB_DOCUMENT_ROOT: /app/public
+            PHP_MEMORY_LIMIT: 1G
+
+    database:
+        image: 'postgres:alpine'
+        environment:
+            POSTGRES_PASSWORD: main
+            POSTGRES_USER: main
+            POSTGRES_DB: main
+        ports:
+            - '5432:5432'
