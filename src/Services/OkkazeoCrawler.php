@@ -254,6 +254,9 @@ class OkkazeoCrawler
      */
     public function getOkkazeoAnnonces(string $url): array
     {
+        // Let's be nice with servers
+        sleep(3);
+
         $response = $this->httpClient->request('GET', $url);
         $content = $response->getContent();
 
