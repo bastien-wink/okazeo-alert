@@ -50,7 +50,7 @@ class Subscription
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $filterMinYear = '2010';
 
-    #[ORM\Column(name: '_created_at', type: 'datetimetz', options: ['default' => '2023-07-01'])]
+    #[ORM\Column(name: '_created_at', type: 'datetimetz', options: ['default' => '2023-07-01 00:00:00+00'])]
     #[Assert\NotBlank]
     private \DateTime $createdAt;
 
