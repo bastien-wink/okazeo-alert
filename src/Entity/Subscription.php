@@ -8,6 +8,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SubscriptionRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['email'], message: 'Cette adresse email est déjà utilisée')]
 class Subscription
 {
@@ -49,6 +50,13 @@ class Subscription
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $filterMinYear = '2010';
 
+    #[ORM\Column(name: '_created_at', type: 'datetimetz', options: ['default' => '2023-07-01'])]
+    #[Assert\NotBlank]
+    private \DateTime $createdAt;
+
+    #[ORM\Column(name: '_updated_at', type: 'datetimetz', nullable: true)]
+    private ?\DateTime $updatedAt = null;
+
     /**
      * @var string[]
      */
@@ -58,6 +66,7 @@ class Subscription
     public function __construct()
     {
         $this->key = md5(random_bytes(100));
+        $this->setCreatedAt(new \DateTime());
     }
 
     public function getId(): ?int
@@ -177,5 +186,31 @@ class Subscription
     public function getFrequency(): int
     {
         return $this->frequency;
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdateAtAuto()
+    {
+        $this->setUpdatedAt(new \DateTime());
+    }
+
+    public function getCreatedAt(): \DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTime $createdAt)
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    public function getUpdatedAt(): ?\DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTime $updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
     }
 }
