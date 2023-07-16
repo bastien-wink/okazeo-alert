@@ -53,7 +53,6 @@ class MainCommand extends Command
             $this->logger->info("Subscription : {$subscription->getEmail()}");
 
             $previousUpdate = $subscription->getUpdatedAt();
-            $subscription->setUpdatedAt($scriptStartTime);
 
             // Todo : move this to query builder once we reach 1000 subscriptions
             if ($previousUpdate) {
@@ -120,8 +119,11 @@ class MainCommand extends Command
                     ]);
 
                 $this->mailer->send($email);
-                $this->entityManager->flush();
+
             }
+
+            $subscription->setUpdatedAt($scriptStartTime);
+            $this->entityManager->flush();
         }
 
         if ($notFoundGames) {
