@@ -43,7 +43,7 @@ class MainCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $subscriptions = $this->entityManager->getRepository(Subscription::class)->findAll();
+        $subscriptions = $this->entityManager->getRepository(Subscription::class)->findBy([], ['frequency' => 'DESC', 'id' => ' DESC']);
 
         $notFoundGames = [];
 
@@ -51,8 +51,8 @@ class MainCommand extends Command
         foreach ($subscriptions as $subscription) {
             $this->logger->info("Subscription : {$subscription->getEmail()}");
 
-            // Daily run at 16h00 UTC (and 04h00 if 12H mode is enabled)
-            if ((idate('H') + 8) % ($subscription->getFrequency()) != 0) {
+            // +8 so Daily run at 16h UTC (and 04h if 12H mode is enabled)
+            if ((idate('H') + 8) % $subscription->getFrequency() != 0) {
                 $this->logger->info("Frequency {$subscription->getFrequency()} disabled at ".date('H'));
                 continue;
             }

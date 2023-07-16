@@ -49,7 +49,7 @@ class OkkazeoCrawler
             $content = $response->getContent();
         } catch (ClientException $e) {
             $this->logger->debug('Extra sleep');
-            sleep(5);
+            sleep(10);
             $response = $this->cachedHttpClient->request('GET', $url);
             $content = $response->getContent();
         }
@@ -255,10 +255,9 @@ class OkkazeoCrawler
     public function getOkkazeoAnnonces(string $url): array
     {
         // Let's be nice with servers
-        sleep(3);
+        sleep(5);
 
-        $response = $this->httpClient->request('GET', $url);
-        $content = $response->getContent();
+        $content = $this->getCacheContent($url);
 
         $crawler = new Crawler($content);
         $arrivage = $crawler->filter('.arrivage.jeu');
