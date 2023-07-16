@@ -46,15 +46,22 @@ class MainCommand extends Command
         $subscriptions = $this->entityManager->getRepository(Subscription::class)->findBy([], ['frequency' => 'DESC', 'id' => ' DESC']);
 
         $notFoundGames = [];
+        $scriptStartTime = new \DateTime();
 
         /** @var Subscription $subscription */
         foreach ($subscriptions as $subscription) {
             $this->logger->info("Subscription : {$subscription->getEmail()}");
 
-            // +8 so Daily run at 16h UTC (and 04h if 12H mode is enabled)
-            if ((idate('H') + 8) % $subscription->getFrequency() != 0) {
-                $this->logger->info("Frequency {$subscription->getFrequency()} disabled at ".date('H'));
-                continue;
+            $previousUpdate = $subscription->getUpdatedAt();
+            $subscription->setUpdatedAt($scriptStartTime);
+
+            // Todo : move this to query builder once we reach 1000 subscriptions
+            if ($previousUpdate) {
+                $nextUpdate = $previousUpdate->add(new \DateInterval('PT'.$subscription->getFrequency().'H'))->sub(new \DateInterval('PT1M')); // Remove 1 min to prevent time drifting (sending schedule might shift otherwise)
+                if ($nextUpdate > $scriptStartTime) {
+                    $this->logger->info("Next update at {$nextUpdate->format('c')}, current script start time is ".$scriptStartTime->format('c'));
+                    continue;
+                }
             }
 
             $topRankedAnnonces = [];
