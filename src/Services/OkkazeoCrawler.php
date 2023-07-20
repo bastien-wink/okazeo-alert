@@ -38,19 +38,19 @@ class OkkazeoCrawler
         $this->entityManager = $entityManager;
     }
 
-    public function getCacheContent(string $url)
+    public function getCacheContent(string $url, array $options = [])
     {
         if (false === file_exists($this->store->getPath('md'.hash('sha256', $url)))) {
             sleep(2);
         }
 
         try {
-            $response = $this->cachedHttpClient->request('GET', $url);
+            $response = $this->cachedHttpClient->request('GET', $url, $options);
             $content = $response->getContent();
         } catch (ClientException $e) {
             $this->logger->debug('Extra sleep');
             sleep(10);
-            $response = $this->cachedHttpClient->request('GET', $url);
+            $response = $this->cachedHttpClient->request('GET', $url, $options);
             $content = $response->getContent();
         }
 
@@ -153,8 +153,7 @@ class OkkazeoCrawler
         }
 
         try {
-            $response = $this->httpClient->request('GET', $okkazeoAnnonce->getUrl(), ['max_redirects' => 0]);
-            $content = $response->getContent();
+            $content = $this->getCacheContent($okkazeoAnnonce->getUrl(), ['max_redirects' => 0]);
         } catch (RedirectionException $e) {
             // HTTP 303 : "L'annonce recherchée n'existe pas ou a été retirée."
             return null;
@@ -174,10 +173,9 @@ class OkkazeoCrawler
         $game->setOkkazeoName($okkazeoAnnonce->getName());
         $game->setOkkazeoImageUrl($okkazeoAnnonce->getImageUrl());
 
-        $response = $this->httpClient->request('GET', $okkazeoGameUrl);
-
         try {
-            $bggUrl = (new Crawler($response->getContent()))->filter('a[href^="https://boardgamegeek.com/boardgame/"]')->first()->attr('href');
+            $content = $this->getCacheContent($okkazeoGameUrl);
+            $bggUrl = (new Crawler($content))->filter('a[href^="https://boardgamegeek.com/boardgame/"]')->first()->attr('href');
             preg_match('/https:\/\/boardgamegeek.com\/boardgame\/(\d+)\//', $bggUrl, $matches);
             $this->logger->info("Found BGG url in Okkazeo View : {$bggUrl}, id : {$matches[1]}");
 
@@ -192,7 +190,10 @@ class OkkazeoCrawler
         return $game;
     }
 
-    public function filterAnnonces(array $okkazeoAnnonces, Subscription $subscription, &$topRankedAnnonces, &$scannedNames = [], &$notSelectedGameNames = [], &$notFoundGames = [], &$firstAnnonce = null): bool
+    /**
+     * @param Annonce[] $okkazeoAnnonces
+     */
+    public function filterAnnonces(array $okkazeoAnnonces, Subscription $subscription, &$topRankedAnnonces, &$scannedNames = [], &$notFoundGames = [], &$firstAnnonce = null): bool
     {
         foreach ($okkazeoAnnonces as $annonce) {
             if (empty($firstAnnonce)) {
@@ -226,13 +227,28 @@ class OkkazeoCrawler
 
             $this->logger->info("       Rank : {$annonce->getGame()->getBggRank()} - https://boardgamegeek.com/boardgame/{$annonce->getGame()->getBggId()} ");
 
-            if (!empty($annonce->getGame()->getBggYearPublished()) && is_numeric($annonce->getGame()->getBggYearPublished()) && $annonce->getGame()->getBggYearPublished() > $subscription->getFilterMinYear()) {
-                if (!empty($annonce->getGame()->getBggRank()) && is_numeric($annonce->getGame()->getBggRank()) && $annonce->getGame()->getBggRank() < $subscription->getFilterMinRank()) {
-                    $topRankedAnnonces[$annonce->getName()] = $annonce;
-                } else {
-                    $notSelectedGameNames[$annonce->getName()] = ['name' => $annonce->getName()];
-                }
+            if ($subscription->getFilterMinYear() &&
+                $annonce->getGame()->getBggYearPublished() &&
+                is_numeric($annonce->getGame()->getBggYearPublished()) &&
+                $annonce->getGame()->getBggYearPublished() < $subscription->getFilterMinYear()) {
+                $this->logger->info('       Skip (FilterMinYear)');
+                continue;
             }
+
+            if ($subscription->getFilterMinRank() && $annonce->getGame()->getBggRank() == 'Not Ranked') {
+                $this->logger->info('       Skip (Not ranked)');
+                continue;
+            }
+
+            if ($subscription->getFilterMinRank() &&
+                !empty($annonce->getGame()->getBggRank()) &&
+                is_numeric($annonce->getGame()->getBggRank()) &&
+                $annonce->getGame()->getBggRank() > $subscription->getFilterMinRank()) {
+                $this->logger->info('       Skip (getFilterMinRank)');
+                continue;
+            }
+
+            $topRankedAnnonces[$annonce->getName()] = $annonce;
         }
 
         return true;
@@ -257,7 +273,8 @@ class OkkazeoCrawler
         // Let's be nice with servers
         sleep(5);
 
-        $content = $this->getCacheContent($url);
+        $response = $this->httpClient->request('GET', $url);
+        $content = $response->getContent();
 
         $crawler = new Crawler($content);
         $arrivage = $crawler->filter('.arrivage.jeu');

@@ -65,13 +65,12 @@ class MainCommand extends Command
 
             $topRankedAnnonces = [];
             $scannedNames = [];
-            $notSelectedGameNames = [];
             $firstAnnonce = null;
 
-            foreach (range(1, 15) as $page) {
+            foreach (range(1, 1) as $page) {
                 $okkazeoAnnonces = $this->crawler->getOkkazeoAnnonces("https://www.okkazeo.com/jeux/arrivages?FiltreCodePostal={$subscription->getFilterZipcode()}&FiltreDistance={$subscription->getFilterRange()}&FiltreRechJeux=on&FiltreLangue=1&FiltreRechPrixMin=&FiltreRechPrixMax=&page=$page");
 
-                $endOfPageReached = $this->crawler->filterAnnonces($okkazeoAnnonces, $subscription, $topRankedAnnonces, $scannedNames, $notSelectedGameNames, $notFoundGames, $firstAnnonce);
+                $endOfPageReached = $this->crawler->filterAnnonces($okkazeoAnnonces, $subscription, $topRankedAnnonces, $scannedNames, $notFoundGames, $firstAnnonce);
 
                 if (!$endOfPageReached) {
                     break;
@@ -85,15 +84,6 @@ class MainCommand extends Command
             }
 
             $this->logger->info('-------------------');
-
-            if ($notSelectedGameNames) {
-                $this->logger->info('Not selected : ');
-
-                $table = new Table($output);
-                $table
-                    ->setRows($notSelectedGameNames);
-                $table->render();
-            }
 
             if ($topRankedAnnonces) {
                 $this->logger->info('Top games : ');
@@ -119,7 +109,6 @@ class MainCommand extends Command
                     ]);
 
                 $this->mailer->send($email);
-
             }
 
             $subscription->setUpdatedAt($scriptStartTime);

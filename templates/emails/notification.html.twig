@@ -5,8 +5,9 @@
 <div class="notification-email" style="width: 100%; margin: auto;text-align: center;padding-top: 10px">
     <div>
         <p>
-            Résultats de recherche à {{ subscription.filterRange }} km autour de {{ subscription.filterZipcode }}, année
-            supérieure à {{ subscription.filterMinYear }} et rang BGG supérieur à {{ subscription.filterMinRank }}
+            Résultats de recherche à {{ subscription.filterRange }} km autour de {{ subscription.filterZipcode }}
+            {% if subscription.filterMinYear %} ; année supérieure à {{ subscription.filterMinYear }} {% endif %}
+            {% if subscription.filterMinRank %} ; rang BGG supérieur à {{ subscription.filterMinRank }}{% endif %}
         </p>
     </div>
     {% for topRankedAnnonce in topRankedAnnonces %}

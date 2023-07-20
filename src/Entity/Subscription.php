@@ -39,6 +39,7 @@ class Subscription
 
     #[ORM\Column(length: 255)]
     #[Assert\NotNull(message: 'Cette valeur ne peut pas être vide.')]
+    #[Assert\Range(minMessage: 'Minimum 1km', maxMessage: 'Maximum 50km', min: 1, max: 50)]
     #[Assert\Regex(pattern: '/^\d+$/', message: 'Code postal invalide')]
     private ?string $filterRange = '10';
 
