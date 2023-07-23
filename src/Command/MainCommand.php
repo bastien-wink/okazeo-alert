@@ -67,7 +67,7 @@ class MainCommand extends Command
             $scannedNames = [];
             $firstAnnonce = null;
 
-            foreach (range(1, 1) as $page) {
+            foreach (range(1, 15) as $page) {
                 $okkazeoAnnonces = $this->crawler->getOkkazeoAnnonces("https://www.okkazeo.com/jeux/arrivages?FiltreCodePostal={$subscription->getFilterZipcode()}&FiltreDistance={$subscription->getFilterRange()}&FiltreRechJeux=on&FiltreLangue=1&FiltreRechPrixMin=&FiltreRechPrixMax=&page=$page");
 
                 $endOfPageReached = $this->crawler->filterAnnonces($okkazeoAnnonces, $subscription, $topRankedAnnonces, $scannedNames, $notFoundGames, $firstAnnonce);
