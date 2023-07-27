@@ -57,7 +57,7 @@ class MainCommand extends Command
             // Todo : move this to query builder once we reach 1000 subscriptions
             if ($previousUpdate) {
                 $nextUpdate = (clone $previousUpdate)->setTime(6, 0);
-                if ($nextUpdate <= $previousUpdate) {
+                if ($nextUpdate <= $previousUpdate || $previousUpdate->format('H') >= 5) {
                     $nextUpdate->add(new \DateInterval('P1D'));
                 }
                 if ($nextUpdate > $scriptStartTime) {
