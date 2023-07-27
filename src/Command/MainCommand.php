@@ -56,7 +56,10 @@ class MainCommand extends Command
 
             // Todo : move this to query builder once we reach 1000 subscriptions
             if ($previousUpdate) {
-                $nextUpdate = $previousUpdate->add(new \DateInterval('PT'.$subscription->getFrequency().'H'))->sub(new \DateInterval('PT1M')); // Remove 1 min to prevent time drifting (sending schedule might shift otherwise)
+                $nextUpdate = (clone $previousUpdate)->setTime(6, 0);
+                if ($nextUpdate <= $previousUpdate) {
+                    $nextUpdate->add(new \DateInterval('P1D'));
+                }
                 if ($nextUpdate > $scriptStartTime) {
                     $this->logger->info("Next update at {$nextUpdate->format('c')}, current script start time is ".$scriptStartTime->format('c'));
                     continue;
