@@ -283,7 +283,7 @@ class OkkazeoCrawler
         foreach ($arrivage as $jeu) {
             $okkazeoAnnonce = new Annonce(
                 url: 'https://www.okkazeo.com'.(new Crawler($jeu))->filter('.titre a')->first()->attr('href'),
-                imageUrl: (new Crawler($jeu))->filter('.mts')->first()->attr('data-src'),
+                imageUrl: (new Crawler($jeu))->filter('.mts')->first()->attr('src'),
                 name: (new Crawler($jeu))->filter('.titre a')->first()->text(),
                 price: (new Crawler($jeu))->filter('.prix')->first()->text()
             );
