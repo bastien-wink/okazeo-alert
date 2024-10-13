@@ -17,9 +17,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Mailer\MailerInterface;
 
 #[AsCommand(
-    name: 'app:main'
+    name: 'okkazeo:alert'
 )]
-class MainCommand extends Command
+class OkkazeoAlertCommand extends Command
 {
     private LoggerInterface $logger;
     private MailerInterface $mailer;

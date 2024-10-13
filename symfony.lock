@@ -50,6 +50,15 @@
             "bin/console"
         ]
     },
+    "symfony/discord-notifier": {
+        "version": "6.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "5.2",
+            "ref": "b97655f9a2fb8fc04d9f4081e0b5599d897b7f6e"
+        }
+    },
     "symfony/flex": {
         "version": "2.2",
         "recipe": {
@@ -110,6 +119,18 @@
             "version": "1.0",
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
         }
+    },
+    "symfony/notifier": {
+        "version": "6.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "5.0",
+            "ref": "178877daf79d2dbd62129dd03612cb1a2cb407cc"
+        },
+        "files": [
+            "config/packages/notifier.yaml"
+        ]
     },
     "symfony/routing": {
         "version": "6.2",
