@@ -61,7 +61,7 @@ class GarageAlertCommand extends Command
                 }
             }
         } catch (\Exception $e) {
-            $openClosedPartialState = 'disconnected '.$e->getMessage();
+            $openClosedPartialState = $_ENV['TAHOMA_USER'].' disconnected, '.$e->getMessage();
         }
 
         $output->writeln(sprintf('Status : <info>%s</info>', $openClosedPartialState));
