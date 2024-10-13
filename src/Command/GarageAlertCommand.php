@@ -54,6 +54,7 @@ class GarageAlertCommand extends Command
             );
 
             $states = json_decode($devicesResponse->getContent())->states;
+            $openClosedPartialState = "missing";
             foreach ($states as $state) {
                 if ($state->name == 'core:OpenClosedPartialState') {
                     $openClosedPartialState = $state->value;
