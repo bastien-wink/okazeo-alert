@@ -2,13 +2,11 @@
 
 namespace App\Command;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Notifier\Bridge\Discord\DiscordOptions;
 use Symfony\Component\Notifier\Bridge\Discord\Embeds\DiscordEmbed;
 use Symfony\Component\Notifier\ChatterInterface;
@@ -27,9 +25,10 @@ class GarageAlertCommand extends Command
     public function __construct(
         private ChatterInterface $chatter,
         private HttpClientInterface $client,
-        private LoggerInterface $logger,
-        private MailerInterface $mailer,
-        private EntityManagerInterface $entityManager
+        private ParameterBagInterface $parameterBag,
+        //private LoggerInterface $logger,
+        //private MailerInterface $mailer,
+        //private EntityManagerInterface $entityManager
     )
     {
         parent::__construct('main');
@@ -42,14 +41,14 @@ class GarageAlertCommand extends Command
             $loginResponse = $this->client->request(
                 'POST',
                 'https://ha101-1.overkiz.com/enduser-mobile-web/enduserAPI/login',
-                ['body' => ['userId' => $_ENV['TAHOMA_USER'], 'userPassword' => $_ENV['TAHOMA_PASSWORD']]],
+                ['body' => ['userId' => $this->parameterBag->get('tahoma_user'), 'userPassword' => $this->parameterBag->get('tahoma_password')]],
             );
             $headers = $loginResponse->getHeaders();
             $cookie = $headers['set-cookie'][0];
 
             $devicesResponse = $this->client->request(
                 'GET',
-                'https://ha101-1.overkiz.com/enduser-mobile-web/enduserAPI/setup/devices/'.$_ENV['TAHOMA_DEVICE'],
+                'https://ha101-1.overkiz.com/enduser-mobile-web/enduserAPI/setup/devices/'.$this->parameterBag->get('tahoma_device'),
                 ['headers' => ['Cookie' => $cookie]]
             );
 
@@ -62,7 +61,7 @@ class GarageAlertCommand extends Command
                 }
             }
         } catch (\Exception $e) {
-            $openClosedPartialState = $_ENV['TAHOMA_USER'].' disconnected, '.$e->getMessage();
+            $openClosedPartialState = $this->parameterBag->get('tahoma_user').' disconnected, '.$e->getMessage();
         }
 
         $output->writeln(sprintf('Status : <info>%s</info>', $openClosedPartialState));
