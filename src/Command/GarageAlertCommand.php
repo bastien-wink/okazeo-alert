@@ -77,20 +77,20 @@ class GarageAlertCommand extends Command
                 ->description($currentDatetime->format('c'))
             );
 
-        //if ($openClosedPartialState != 'closed') {
-        $startTime = new \DateTime('23:00', $parisTimezone);
-        $endTime = new \DateTime('05:00', $parisTimezone);
-        if ($currentDatetime >= $startTime || $currentDatetime < $endTime) {
-            $chatMessage = new ChatMessage('Alerte garage @here');
-            $discordOptions = (new DiscordOptions())
-                ->username('Ravanel Assistant')
-                ->addEmbed((new DiscordEmbed())
-                    ->color(2021216)
-                    ->title("Garage en status '$openClosedPartialState' après 23h")
-                    ->description($currentDatetime->format('c'))
-                );
+        if ($openClosedPartialState != 'closed') {
+            $startTime = new \DateTime('23:00', $parisTimezone);
+            $endTime = new \DateTime('05:00', $parisTimezone);
+            if ($currentDatetime >= $startTime || $currentDatetime < $endTime) {
+                $chatMessage = new ChatMessage('Alerte garage @here');
+                $discordOptions = (new DiscordOptions())
+                    ->username('Ravanel Assistant')
+                    ->addEmbed((new DiscordEmbed())
+                        ->color(2021216)
+                        ->title("Garage en status '$openClosedPartialState' après 23h, danger")
+                        ->description($currentDatetime->format('c'))
+                    );
+            }
         }
-        //}
         $chatMessage->options($discordOptions);
         $this->chatter->send($chatMessage);
 
