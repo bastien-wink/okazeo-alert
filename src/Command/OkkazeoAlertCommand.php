@@ -43,6 +43,10 @@ class OkkazeoAlertCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+
+        // Disabled until we replace postcode by filterUrl
+        return Command::SUCCESS;
+
         $subscriptions = $this->entityManager->getRepository(Subscription::class)->findBy([], ['frequency' => 'DESC', 'id' => ' DESC']);
 
         $notFoundGames = [];
