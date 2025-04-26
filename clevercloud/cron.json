@@ -1,3 +1,3 @@
 [
-  "48 * * * * $ROOT/crons/hourly.sh"
+  "52 * * * * $ROOT/crons/hourly.sh"
 ]
