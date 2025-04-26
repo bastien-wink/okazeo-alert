@@ -36,7 +36,6 @@ class GarageAlertCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-
         try {
             $loginResponse = $this->client->request(
                 'POST',
