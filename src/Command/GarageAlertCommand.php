@@ -81,7 +81,7 @@ class GarageAlertCommand extends Command
             $startTime = new \DateTime('23:00', $parisTimezone);
             $endTime = new \DateTime('05:00', $parisTimezone);
             if ($currentDatetime >= $startTime || $currentDatetime < $endTime) {
-                $chatMessage = new ChatMessage('Alerte garage @here');
+                $chatMessage = new ChatMessage('Alerte garage @everyone');
                 $discordOptions = (new DiscordOptions())
                     ->username('Ravanel Assistant')
                     ->addEmbed((new DiscordEmbed())
